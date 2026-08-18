@@ -1,7 +1,6 @@
-# Live pipeline trigger for payments-service (jackson Lightwell demo — WITH tests).
-# Requires .upgrade-delta/ vendor bundle and cluster secrets (maven settings, PaC).
-# PVC upgrade-delta-live-reports is dedicated to this app; the REACHABILITY_ONLY
-# sibling uses payments-service-notests + upgrade-delta-live-reports-notests.
+# Live pipeline trigger for payments-service-grade-c (json-path base bump → grade C).
+# Dedicated PVC so reports are never overwritten by with-tests or notests lanes.
+# Expected: headline C → grade-gate passes (fail-on D) → cab-decision waits for human.
 #
 # Demo cycle: ./scripts/demo-live-cycle.sh start | finish
 apiVersion: tekton.dev/v1
@@ -24,7 +23,7 @@ metadata:
     pipelinesascode.tekton.dev/task-9: ".upgrade-delta/real-pipeline/task-cab-decision.yaml"
     pipelinesascode.tekton.dev/task-10: ".upgrade-delta/real-pipeline/task-build-payments-image.yaml"
     pipelinesascode.tekton.dev/task-11: ".upgrade-delta/real-pipeline/task-canary-rollout.yaml"
-  name: upgrade-delta-live-pr
+  name: upgrade-delta-live-pr-gradec
 spec:
   pipelineRef:
     name: upgrade-delta-live
@@ -38,7 +37,7 @@ spec:
     - name: pom-path
       value: 'pom.xml'
     - name: app-name
-      value: 'payments-service'
+      value: 'payments-service-grade-c'
     - name: app-module-dir
       value: '.'
     - name: fail-on
@@ -56,15 +55,10 @@ spec:
     - name: pull-request-number
       value: '{{ pull_request_number }}'
     - name: scorecard-route-host
-      value: 'scorecard-upgrade-delta-demo.apps.asaran.na-launch.com'
-    # false for Lightwell remediations: keep PR open so CAB reports can be
-    # reviewed and the PR merged. (demo-live-cycle.sh finish closes demo PRs.)
+      value: 'scorecard-gradec-upgrade-delta-demo.apps.asaran.na-launch.com'
     - name: auto-close-pr
       value: 'false'
     - name: enable-canary
-      # This demo cluster's Image Registry operator is Removed, so binary
-      # builds cannot push. Flip to "true" when an internal/external registry
-      # is available for payments-service images.
       value: 'false'
     - name: canary-namespace
       value: 'upgrade-delta-demo'
@@ -75,7 +69,7 @@ spec:
   workspaces:
     - name: source
       persistentVolumeClaim:
-        claimName: upgrade-delta-live-reports
+        claimName: upgrade-delta-live-reports-gradec
     - name: maven-settings
       secret:
         secretName: lightwell-maven-settings

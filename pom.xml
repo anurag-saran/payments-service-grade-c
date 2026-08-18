@@ -5,12 +5,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.example</groupId>
-  <artifactId>payments-service</artifactId>
+  <artifactId>payments-service-grade-c</artifactId>
   <version>1.0.0</version>
   <packaging>jar</packaging>
-  <name>payments-service</name>
+  <name>payments-service-grade-c</name>
   <description>
-    Shared demo app for Lightwell GitHub remediations and upgrade-delta live grading.
+    Grade-C demo app: json-path base-version bump (2.7.0 → 2.8.0.rhlw) for human CAB. Shared pattern with payments-service; dedicated PVC so reports stay isolated.
     Not a production payments product.
     Lightwell versions (when used) come only from the public console demos:
     java-remediated-demo / java-validated-demo (public-lightwell-demo Maven feeds).

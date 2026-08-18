@@ -1,79 +1,60 @@
-# payments-service
+# payments-service-grade-c
 
-[![Lightwell library updates](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fanurag-saran%2Fpayments-service%2Flightwell%2Fbadge%2Flightwell-badge.json&v=2)](https://github.com/anurag-saran/payments-service/pulls?q=is%3Apr+is%3Aopen+label%3Alightwell)
-
-**Shared demo app** for:
-
-1. **[Lightwell GitHub plugin](https://github.com/anurag-saran/lightwell-github-plugin-demo)** — remediates matching community deps (badge + PR)
-2. **[upgrade-delta](https://github.com/anurag-saran/upgrade-delta)** — live pom bump → grade → test routing (jackson hero)
+Sibling of **[payments-service](https://github.com/anurag-saran/payments-service)** for the
+**grade C / human CAB** live demo. Same app sources, tests, Dockerfile, and deploy
+manifests — used so upgrade-delta can show a **base-version** Lightwell bump that
+headlines **C**, passes `fail-on: D`, then **waits** at `cab-decision` for a human
+ConfigMap approval.
 
 Not a production payments product. Package: `com.example.payments`.
+
+## Why a separate repo?
+
+| | payments-service | payments-service-notests | payments-service-grade-c |
+|---|---|---|---|
+| Hero | jackson drop-in → grade **B** | Empty tests → **REACHABILITY_ONLY** | json-path base bump → grade **C** |
+| PipelineRun | `upgrade-delta-live-pr` | `upgrade-delta-live-pr-notests` | `upgrade-delta-live-pr-gradec` |
+| PVC | `upgrade-delta-live-reports` | `upgrade-delta-live-reports-notests` | `upgrade-delta-live-reports-gradec` |
+| Scorecard | Route `scorecard` | Route `scorecard-notests` | Route `scorecard-gradec` |
+
+Separate PVCs + viewers so concurrent demos never overwrite each other's reports.
 
 ## Build
 
 JDK 17+.
 
 ```bash
-# Community pins on main (Maven Central). Public Lightwell demo feeds are declared
-# in pom.xml for remediations only — see console.redhat.com Lightwell demos:
-#   /lightwell/demo/java-remediated-demo
-#   /lightwell/demo/java-validated-demo
 mvn -B verify
 # Equivalent (kept for pipeline scripts):
 mvn -B -Pci-community verify
 ```
 
-Produces a **fat / shaded** `target/payments-service.jar` (dependencies packaged inside),
-CycloneDX `target/bom.json`, and JaCoCo under `target/site/jacoco/`.
+Produces a **fat / shaded** jar, CycloneDX `target/bom.json`, and JaCoCo under
+`target/site/jacoco/`.
 
-## Fast-lane demo (public Lightwell demo catalog)
+## Fast-lane demo (grade C / human CAB)
 
-On `main`, remediable deps stay on **community** `fromVersion`s that appear on the
-public console demos (validated + remediated). No authenticated Lightwell pins.
-Typical badge matches: jackson-databind, commons-io, httpclient, spring-core, json-path.
-A remediation PR that only bumps those typically grades **A/B** → shrink-allowed
-lanes (*Just smoke-test it* / *Test the parts you use*).
-
-`coverage-map.json` maps tests to app classes so the router can select:
-
-| Remediation | Primary call site | Selected tests (typical) |
-|-------------|-------------------|--------------------------|
-| jackson-databind | `PaymentService` | `PaymentServiceTest` + `BootSmokeIT` |
-| commons-io | `ReportArchive` | `ReportArchiveTest` + `BootSmokeIT` |
-| httpclient | `GatewayClient` | `GatewayClientTest` + `BootSmokeIT` |
-
-`./scripts/demo-live-cycle.sh start` bumps jackson only (cleanest fast-lane hero).
-
-## Lightwell plugin
-
-```text
-Plugin repo → Actions → Lightwell Remediate → target anurag-saran/payments-service
-```
-
-Badge JSON lives on branch `lightwell/badge` (not `main`).
-
-After a remediation PR merges (or any `pom.xml` change on `main`),
-**Lightwell badge sync** re-scans and republishes the count so the README
-badge drops to `0 available` without a manual plugin run.
-
-## upgrade-delta (live)
-
-Vendored pipeline bundle: copy from upgrade-delta via `./scripts/sync-vendor-bundle.sh` there, then sync into this repo (or run `scripts/pull-upgrade-delta-bundle.sh` here).
+On `main`, keep **community** `json-path` `2.7.0`. Open a pom bump PR that adopts
+Lightwell **`2.8.0.rhlw-00001` only** (do **not** bump snakeyaml — that headlines **F**):
 
 ```bash
-# Repeatable jackson demo (opens PR; do not merge):
 ./scripts/demo-live-cycle.sh start
-# …watch upgrade-delta-live-pr-… on the cluster…
+# …watch upgrade-delta-live-pr-gradec-… on the cluster…
+# When cab-decision waits:
+oc create configmap upgrade-delta-cab-approved -n upgrade-delta-demo \
+  --from-literal=approved=true
 ./scripts/demo-live-cycle.sh finish
 ```
 
-Details: upgrade-delta `docs/DEMO-LIVE-POM.md` (paths now refer to this repo).
+Expect: headline **C** → grade-gate passes → `cab-decision` human wait → ConfigMap
+approve → PR comment. Scorecard URL uses the **gradec** route host (see
+`.tekton/pull-request-live.yaml`).
+
+Details: upgrade-delta `docs/DEMO-LIVE-POM.md` § *Three live demos*.
 
 ## Layout
 
-- `pom.xml` / `src/` — Spring-ish payments service with real call sites
+- `pom.xml` / `src/` — same call sites and tests as payments-service
 - `coverage-map.json` — per-test coverage for fast-lane test selection
-- `settings.xml.template` — Lightwell Maven credentials
-- `.upgrade-delta/` — vendored upgrade-delta live pipeline (optional; for PaC)
-- `.tekton/pull-request-live.yaml` — PaC trigger for live grading
-- `lightwell-badge.json` — shields endpoint (published on `lightwell/badge`)
+- `.upgrade-delta/` — vendored upgrade-delta live pipeline
+- `.tekton/pull-request-live.yaml` — PaC trigger (`app-name: payments-service-grade-c`)
