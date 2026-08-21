@@ -10,12 +10,12 @@ Not a production payments product. Package: `com.example.payments`.
 
 ## Why a separate repo?
 
-| | payments-service | payments-service-notests | payments-service-grade-c |
-|---|---|---|---|
-| Hero | jackson drop-in → grade **B** | Empty tests → **REACHABILITY_ONLY** | json-path base bump → grade **C** |
-| PipelineRun | `upgrade-delta-live-pr` | `upgrade-delta-live-pr-notests` | `upgrade-delta-live-pr-gradec` |
-| PVC | `upgrade-delta-live-reports` | `upgrade-delta-live-reports-notests` | `upgrade-delta-live-reports-gradec` |
-| Scorecard | Route `scorecard` | Route `scorecard-notests` | Route `scorecard-gradec` |
+| | payments-service | payments-service-notests | payments-service-grade-c | payments-service-grade-f |
+|---|---|---|---|---|
+| Hero | jackson drop-in → grade **B** | Empty tests → **REACHABILITY_ONLY** | json-path base bump → grade **C** | snakeyaml `1.30`→`1.33` → grade **F** |
+| PipelineRun | `upgrade-delta-live-pr` | `upgrade-delta-live-pr-notests` | `upgrade-delta-live-pr-gradec` | `upgrade-delta-live-pr-gradef` |
+| PVC | `upgrade-delta-live-reports` | `upgrade-delta-live-reports-notests` | `upgrade-delta-live-reports-gradec` | `upgrade-delta-live-reports-gradef` |
+| Scorecard | Route `scorecard` | Route `scorecard-notests` | Route `scorecard-gradec` | Route `scorecard-gradef` |
 
 Separate PVCs + viewers so concurrent demos never overwrite each other's reports.
 
@@ -50,7 +50,7 @@ Expect: headline **C** → grade-gate passes → `cab-decision` human wait → C
 approve → PR comment. Scorecard URL uses the **gradec** route host (see
 `.tekton/pull-request-live.yaml`).
 
-Details: upgrade-delta `docs/DEMO-LIVE-POM.md` § *Three live demos*.
+Details: upgrade-delta `docs/DEMO-LIVE-POM.md` § *Four live demos*.
 
 ## Layout
 
