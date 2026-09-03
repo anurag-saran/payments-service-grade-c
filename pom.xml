@@ -26,14 +26,14 @@
          demo feeds). -->
     <spring-boot.version>2.7.18</spring-boot.version>
     <spring.version>5.3.18</spring.version>
-    <spring-core.version>5.3.18</spring-core.version>
+    <spring-core.version>5.3.18.rhlw-00003</spring-core.version>
     <spring-security.version>5.7.11</spring-security.version>
     <!-- Demo remediations stay on community so the badge can show available updates.
          fromVersions match console.redhat.com Lightwell public demos. -->
-    <jackson.version>2.13.4</jackson.version>
-    <commons-io.version>2.11.0</commons-io.version>
-    <httpclient.version>4.5.12</httpclient.version>
-    <json-path.version>2.7.0</json-path.version>
+    <jackson.version>2.13.4.rhlw-00001</jackson.version>
+    <commons-io.version>2.11.0.rhlw-00001</commons-io.version>
+    <httpclient.version>4.5.12.rhlw-00001</httpclient.version>
+    <json-path.version>2.7.0.rhlw-00001</json-path.version>
     <!-- Deliberately pre-1.33 community so ConfigLoader's removed constructor stays reachable. -->
     <snakeyaml.version>1.30</snakeyaml.version>
   </properties>
